@@ -1,0 +1,956 @@
+NAME: nsm
+LAST DEPLOYED: Sat Feb  8 04:52:22 2020
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+{}
+
+COMPUTED VALUES:
+admission-webhook:
+  global:
+    JaegerTracing: false
+  org: networkservicemesh
+  pullPolicy: IfNotPresent
+  registry: docker.io
+  tag: master
+config:
+  global:
+    JaegerTracing: false
+forwardingPlane: vpp
+global:
+  JaegerTracing: false
+insecure: false
+kernel:
+  image: kernel-forwarder
+  resources:
+    limitCPU: 1
+    requestsCPU: 1m
+metricsCollectorEnabled: false
+org: networkservicemesh
+prefix-service:
+  global:
+    JaegerTracing: false
+  org: networkservicemesh
+  pullPolicy: IfNotPresent
+  registry: docker.io
+  serviceAccount:
+    name: nsmgr-acc
+  tag: master
+pullPolicy: IfNotPresent
+registry: docker.io
+spire:
+  azure: false
+  enabled: true
+  global:
+    JaegerTracing: false
+  namespace: spire
+  org: networkservicemesh
+  pullPolicy: IfNotPresent
+  registry: docker.io
+  selfSignedCA: true
+  tag: master
+tag: master
+vpp:
+  image: vppagent-forwarder
+
+HOOKS:
+MANIFEST:
+---
+# Source: nsm/charts/spire/templates/spire-namespace.tpl
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spire
+---
+# Source: nsm/charts/admission-webhook/templates/admission-webhook-secret.tpl
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nsm-admission-webhook-certs
+  namespace: default
+type: Opaque
+data:
+  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBdlVjUmtxQThNTjU3TldjSjM4NHJGc0RpSFdiODlGdktPZExKU20yZVVYSU5XSURmCnVvZnBaS3lvTmhzcHBaTHlLSVo3L2gzMTFCdHppcmRMM096Q3BGb1JncThnSndpcEQvRjdRV1Qwckp3T0hTcEcKbS80SElQSzR3NXkxcDBjQktpZjZMeTBEVFhZS0NkTUU4SXN3UVBEeWFMOU1qUldDb013NnAyMTdpMTE0YTVJUgphelhlT1V4OEtWQVhzWXNOcmRPWUhCQnprajgzeUM3eVVtc25wV0lvaEZVUlR1QUdsZTNydGQxMFpWdTRNYTU4ClY1NFRiYzI3a2h5Y0pFS0JEUUFRT2p3ck1WM1YrNlpXL0tUOGkzWlNjVTBWbngyNWNYV0ZxRitkWnJyQWt6cEsKNGE2dTFOd0h1MWRzQndrMU11eHExZUc5bjhuQlVVSmY0eklSRndJREFRQUJBb0lCQVFDbmtWZDVXK3B0eVVtQwp5YW53UFhIZ1B2cnYxTkYwOUI1Z2VzQkI2RElWSU1lMzVzQXJQMC9kRlE0R2VKMnlQQm11endET3hHOXlUS3RKCnoyU1dQZlZEMDRsVkRQMkdFU0M3UUtwQ0JzS21YYklSRi9CVEFkNEZ5VnpSc05jUk5NZFBMdjFLN3FyUjFRS20KRis5emxZWXV1Q0dqb2xoL1B0L2F3M1BaN2c5R0hRQlFTNWdNdHE1WGNQcTZPMGh0L2t3ck9Ta2RBenM4RGYvdwpVRkpQbm9pcVdzb1IvVTMzRDFpaG5OeDBQVVg3N0U3QTdpMjdLUkxCT1BuWlptOU9CQnBWYkJzTFpaOE1aS1llCkUrc2ltYk82RXpheFNNOTdZWVNZQllnRmFjTlBib0p0VDlVTVhQN3lsTlhpM05vU1dldHpTZ3k2MWl6V2pKUHMKbU0vc1Z2UEJBb0dCQU51cElNTnRrUFlvVVYrQUhLTnpQcTBBY29GUXVQaDErYmdST0VSWEhOZjJ2VzBsZWk0UAoyZ3NkMWpKZmsvVzdkRk9ud0RJTW1WRG8yb1N6d0dqVW9NNUt6b09BNHUyeTZXbXpwNFhHc1AxTkFKS2lYZlNOCmtsWlY5YjMvTFJnSklkeVhkZ0FGNWJzUlVLekVkeWtVc2JmYUl3MHRYNWFoS0NXdWJxR09QeVhKQW9HQkFOeVgKTDJKQUpzcFJlVUlRRmhlRzdoR3NXWWlqazZuSEcvUDFnc1E0UXhwVE9UOUNPeURiaDVrNjVZNWYwOThYei9GawpCRGRlQ0N6aFdCNUYzdXlTVC8vRnYzYkZUODRIOWN3ZkUyaUtZZlZPKy9NVHBPbFFjUUI2UDJuY1ZpYTUxMG9lCm1KbTdQNm02VUpsMkN4TDJXUitBVk9HOWRuUFJZL0xqVUVweFhtL2ZBb0dBRzdMUDl0U3lHdGdxcXFnMDlFZHIKOTlTK201L2FNenB0S3REQkQ1ME1mZzhYQTlSZCs4RHo5Y0xsWjZTMXU1N1BwRnphMTNUUFFHeWNZVzlwSzg3awpHQjlHdXo1ZFh5dllVd1BjYy9vQ0IyN1dTNmM5d2NDNFd6cXJxakdyTmdTd3lHZ3c4UC9OWURGbXd1SmpSRUxmCnhoY3pwRTI4Wi9vYVhlWUkvVVk2b0VFQ2dZQmZIQ3lJLzBINlg3Q1pwRmZ5SXZKSTJuZnNLeU5DdzUrd3l6MXIKbnhxSG9qUi9xdTNWbC9IYVJvT3RwSEcwc2c2dGRNTkFvQ0dFUUZEL0ZIOHVuMU13NDdGTzQzb3FTbEpYaFZxWAo2M3FiQzBna29XYXNWa3V5dWdMWGdQSUFWb2FWNWFWRU8zRVNuRXVlTDBCTkY3eUxrWWlIb0dvUE84d05jS2N3CndickhId0tCZ0U0akJGS2J1OHJ5Q080a2F6YXJ2eCsxMDl6cHliVWlyL3U1SWlBWlNjTDZ4dnZ3WitjNDNzVGQKNlgxWUFKTVVBb0ZJMS90OGM0dGFibCsyM3BDZDRhZmxQempxRHJIVDBOV3RkSEszRit2QUpzK1dqUzBidUlBaQpCbGwyOWFVbnRySjYzU3hMb2crTmxBL2k4Nnh0eGlZcS9mWDlRYlhvcnVrWEs1bWplSnlaCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURaakNDQWs2Z0F3SUJBZ0lRSEIzUDd3cDA3V2ZzVUtDZk90S29yREFOQmdrcWhraUc5dzBCQVFzRkFEQWkKTVNBd0hnWURWUVFERXhkaFpHMXBjM05wYjI0dFkyOXVkSEp2Ykd4bGNpMWpZVEFlRncweU1EQXlNRGd3TkRVeQpNak5hRncwek1EQXlNRFV3TkRVeU1qTmFNQ1F4SWpBZ0JnTlZCQU1UR1c1emJTMWhaRzFwYzNOcGIyNHRkMlZpCmFHOXZheTF6ZG1Nd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUJBUUM5UnhHU29Ed3cKM25zMVp3bmZ6aXNXd09JZFp2ejBXOG81MHNsS2JaNVJjZzFZZ04rNmgrbGtyS2cyR3ltbGt2SW9obnYrSGZYVQpHM09LdDB2YzdNS2tXaEdDcnlBbkNLa1A4WHRCWlBTc25BNGRLa2FiL2djZzhyakRuTFduUndFcUovb3ZMUU5OCmRnb0owd1R3aXpCQThQSm92MHlORllLZ3pEcW5iWHVMWFhocmtoRnJOZDQ1VEh3cFVCZXhpdzJ0MDVnY0VIT1MKUHpmSUx2SlNheWVsWWlpRVZSRk80QWFWN2V1MTNYUmxXN2d4cm54WG5oTnR6YnVTSEp3a1FvRU5BQkE2UENzeApYZFg3cGxiOHBQeUxkbEp4VFJXZkhibHhkWVdvWDUxbXVzQ1RPa3JocnE3VTNBZTdWMndIQ1RVeTdHclY0YjJmCnljRlJRbC9qTWhFWEFnTUJBQUdqZ1pVd2daSXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CMEdBMVVkSlFRV01CUUcKQ0NzR0FRVUZCd01CQmdnckJnRUZCUWNEQWpBTUJnTlZIUk1CQWY4RUFqQUFNRk1HQTFVZEVRUk1NRXFDSVc1egpiUzFoWkcxcGMzTnBiMjR0ZDJWaWFHOXZheTF6ZG1NdVpHVm1ZWFZzZElJbGJuTnRMV0ZrYldsemMybHZiaTEzClpXSm9iMjlyTFhOMll5NWtaV1poZFd4MExuTjJZekFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBcGlSMXJ5YkoKUmZINWxza2lOWm9hSnJvRnhCZVpPRXJrOE51VmphUkVhdXBoVjhhQ0ZNcW1HWVZyd1FKbXNwRjhrRlVLTkh3Swp3eFJiZ3ZBWEJ1cEhwOXZaQ0U1V0NoUnpUTWFSc014ckgrMEpheFhYK1ZkZGNmb0lDd1ZBSDNjZWV6aFRjZXBFCldNVlc5Slk4SXptbmN6YWxnZTF0ZmFuZ2RwcmVFbDhlcW5sS2RiZTB5eVNoU0JFZWpmSi9FWXA1OHdFdXU5dHEKdXB2V0ErZ3YyT0VnY0dDZlhObWxxWXRNczcyOE94d1lSTEd2WVZqNkdyQUkzZFYrSGpyWnJySHNHdkx0YjRXNQpZTmExanB2L3Vkd095b0VKT2ZTcEF2citpam1Db3pDU3dKOHV2QUVZSGZLR0N3UWRQa3lMM2Z2ZWxFU2ZkNDlTCjdXZVNTZWNXc3FNNnhBPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+---
+# Source: nsm/charts/spire/templates/spire-secret.tpl
+apiVersion: v1
+kind: Secret
+metadata:
+  name: spire-secret
+  namespace: spire
+type: Opaque
+data:
+  bootstrap.key: |-
+    
+  bootstrap.crt: |-
+---
+# Source: nsm/charts/config/templates/nsm-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nsm-config
+data:
+  excluded_prefixes.yaml: ''
+---
+# Source: nsm/charts/spire/templates/agent-configmap.tpl
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spire-agent
+  namespace: spire
+data:
+  agent.conf: |
+    agent {
+      data_dir = "/run/spire"
+      log_level = "DEBUG"
+      server_address = "spire-server"
+      server_port = "8081"
+      socket_path = "/run/spire/sockets/agent.sock"
+      trust_bundle_path = "/run/spire/bundle/bundle.crt"
+      trust_domain = "test.com"
+    }
+    plugins {
+      NodeAttestor "k8s_sat" {
+        plugin_data {
+          # NOTE: Change this to your cluster name
+          cluster = "kubernetes"
+        }
+      }
+      KeyManager "memory" {
+        plugin_data {
+        }
+      }
+      WorkloadAttestor "k8s" {
+        plugin_data {
+          skip_kubelet_verification = true
+        }
+      }
+    }
+---
+# Source: nsm/charts/spire/templates/registration-configmap.tpl
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spire-entries
+  namespace: spire
+data:
+  registration.json: |-
+    {
+      "entries": [
+        {
+          "selectors": [
+            {
+              "type": "k8s_sat",
+              "value": "agent_sa:spire-agent"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/spire-agent",
+          "parent_id": "spiffe://test.com/spire/server"
+        },
+        {
+          "selectors": [
+            {
+              "type": "k8s",
+              "value": "sa:nsmgr-acc"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/nsmgr",
+          "parent_id": "spiffe://test.com/spire-agent"
+        },
+        {
+          "selectors": [
+            {
+              "type": "k8s",
+              "value": "sa:nse-acc"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/nse",
+          "parent_id": "spiffe://test.com/spire-agent"
+        },
+        {
+          "selectors": [
+            {
+              "type": "k8s",
+              "value": "sa:nsc-acc"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/nsc",
+          "parent_id": "spiffe://test.com/spire-agent"
+        },
+        {
+          "selectors": [
+            {
+              "type": "k8s",
+              "value": "sa:forward-plane-acc"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/forward-plane",
+          "parent_id": "spiffe://test.com/spire-agent"
+        },
+        {
+          "selectors": [
+            {
+              "type": "k8s",
+              "value": "sa:nsmrs-acc"
+            }
+          ],
+          "spiffe_id": "spiffe://test.com/nsmrs",
+          "parent_id": "spiffe://test.com/spire-agent"
+        }
+      ]
+    }
+---
+# Source: nsm/charts/spire/templates/server-configmap.tpl
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spire-bundle
+  namespace: spire
+---
+# Source: nsm/charts/spire/templates/server-configmap.tpl
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spire-server
+  namespace: spire
+data:
+  server.conf: |
+    server {
+      bind_address = "0.0.0.0"
+      bind_port = "8081"
+      trust_domain = "test.com"
+      data_dir = "/run/spire/data"
+      log_level = "DEBUG"
+      svid_ttl = "1h"
+      upstream_bundle = true
+      registration_uds_path = "/run/spire/sockets/registration.sock"
+      ca_subject = {
+        Country = ["US"],
+        Organization = ["SPIFFE"],
+        CommonName = "",
+      }
+    }
+    plugins {
+      DataStore "sql" {
+        plugin_data {
+          database_type = "sqlite3"
+          connection_string = "/run/spire/data/datastore.sqlite3"
+        }
+      }
+      NodeAttestor "k8s_sat" {
+        plugin_data {
+          clusters = {
+            # NOTE: Change this to your cluster name
+            "kubernetes" = {
+              use_token_review_api_validation = true
+              service_account_whitelist = ["spire:spire-agent"]
+            }
+          }
+        }
+      }
+      NodeResolver "noop" {
+        plugin_data {}
+      }
+      KeyManager "disk" {
+        plugin_data {
+          keys_path = "/run/spire/data/keys.json"
+        }
+      }
+      Notifier "k8sbundle" {
+        plugin_data {
+          # This plugin updates the bundle.crt value in the spire:spire-bundle
+          # ConfigMap by default, so no additional configuration is necessary.
+        }
+      }
+    }
+---
+# Source: nsm/charts/spire/templates/agent-account.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spire-agent
+  namespace: spire
+---
+# Source: nsm/charts/spire/templates/server-account.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spire-server
+  namespace: spire
+---
+# Source: nsm/templates/service-accounts.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nsc-acc
+  namespace: default
+---
+# Source: nsm/templates/service-accounts.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nse-acc
+  namespace: default
+---
+# Source: nsm/templates/service-accounts.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: forward-plane-acc
+  namespace: default
+---
+# Source: nsm/templates/service-accounts.tpl
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nsmgr-acc
+  namespace: default
+---
+# Source: nsm/charts/config/templates/crd-networkserviceendpoints.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: networkserviceendpoints.networkservicemesh.io
+spec:
+  conversion:
+    strategy: None
+  group: networkservicemesh.io
+  names:
+    kind: NetworkServiceEndpoint
+    listKind: NetworkServiceEndpointList
+    plural: networkserviceendpoints
+    shortNames:
+      - nse
+      - nses
+    singular: networkserviceendpoint
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+---
+# Source: nsm/charts/config/templates/crd-networkservicemanagers.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: networkservicemanagers.networkservicemesh.io
+spec:
+  conversion:
+    strategy: None
+  group: networkservicemesh.io
+  names:
+    kind: NetworkServiceManager
+    listKind: NetworkServiceManagerList
+    plural: networkservicemanagers
+    shortNames:
+      - nsm
+      - nsms
+    singular: networkservicemanager
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+---
+# Source: nsm/charts/config/templates/crd-networkservices.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: networkservices.networkservicemesh.io
+spec:
+  conversion:
+    strategy: None
+  group: networkservicemesh.io
+  names:
+    kind: NetworkService
+    listKind: NetworkServiceList
+    plural: networkservices
+    shortNames:
+      - netsvc
+      - netsvcs
+    singular: networkservice
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+---
+# Source: nsm/charts/config/templates/cluster-role-admin.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nsm-role
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+rules:
+  - apiGroups: ["networkservicemesh.io"]
+    resources:
+      - "networkservices"
+      - "networkserviceendpoints"
+      - "networkservicemanagers"
+    verbs: ["*"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "update"]
+  - apiGroups: [""]
+    resources: ["nodes", "services", "namespaces"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: nsm/charts/config/templates/cluster-role-view.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: aggregate-network-services-view
+  labels:
+    # Add these permissions to the "view" default role.
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules:
+  - apiGroups: ["networkservicemesh.io"]
+    resources: ["networkservices"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: nsm/charts/spire/templates/spire-roles.tpl
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spire-server-role
+rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["get", "watch", "list", "create"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["spire-bundle"]
+    verbs: ["get", "patch"]
+---
+# Source: nsm/charts/spire/templates/spire-roles.tpl
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spire-agent-role
+rules:
+  - apiGroups: [""]
+    resources: ["nodes/proxy"]
+    verbs: ["get", "watch", "list", "create"]
+---
+# Source: nsm/charts/config/templates/cluster-role-binding.tpl
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nsm-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nsm-role
+subjects:
+  - kind: ServiceAccount
+    name: nsmgr-acc
+    namespace: default
+---
+# Source: nsm/charts/spire/templates/spire-roles.tpl
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: spire-server-binding
+subjects:
+  - kind: ServiceAccount
+    name: spire-server
+    namespace: spire
+roleRef:
+  kind: ClusterRole
+  name: spire-server-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: nsm/charts/spire/templates/spire-roles.tpl
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: spire-agent-binding
+subjects:
+  - kind: ServiceAccount
+    name: spire-agent
+    namespace: spire
+roleRef:
+  kind: ClusterRole
+  name: spire-agent-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: nsm/charts/admission-webhook/templates/admission-webhook-secret.tpl
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsm-admission-webhook-svc
+  namespace: default
+  labels:
+    app: nsm-admission-webhook
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+  selector:
+    app: nsm-admission-webhook
+---
+# Source: nsm/charts/spire/templates/server-service.tpl
+apiVersion: v1
+kind: Service
+metadata:
+  name: spire-server
+  namespace: spire
+spec:
+  type: NodePort
+  ports:
+    - name: grpc
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+  selector:
+    app: spire-server
+---
+# Source: nsm/charts/spire/templates/agent-daemonset.tpl
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: spire-agent
+  namespace: spire
+  labels:
+    app: spire-agent
+spec:
+  selector:
+    matchLabels:
+      app: spire-agent
+  template:
+    metadata:
+      namespace: spire
+      labels:
+        app: spire-agent
+    spec:
+      hostPID: true
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: "spire-agent"
+      initContainers:
+        - name: init
+          # This is a small image with wait-for-it, choose whatever image
+          # you prefer that waits for a service to be up. This image is built
+          # from https://github.com/lqhl/wait-for-it
+          image: gcr.io/spiffe-io/wait-for-it
+          args: ["-t", "30", "spire-server:8081"]
+      containers:
+        - name: spire-agent
+          image: gcr.io/spiffe-io/spire-agent:0.9.0
+          args: ["-config", "/run/spire/config/agent.conf"]
+          volumeMounts:
+            - name: spire-config
+              mountPath: /run/spire/config
+              readOnly: true
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: false
+            - name: spire-bundle
+              mountPath: /run/spire/bundle
+              readOnly: true
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "/opt/spire/bin/spire-agent api fetch -socketPath /run/spire/sockets/agent.sock 2>&1 | grep -vqE 'connection refused|no such file or directory'"
+            failureThreshold: 2
+            initialDelaySeconds: 15
+            periodSeconds: 60
+            timeoutSeconds: 3
+      volumes:
+        - name: spire-config
+          configMap:
+            name: spire-agent
+        - name: spire-bundle
+          configMap:
+            name: spire-bundle
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: DirectoryOrCreate
+---
+# Source: nsm/templates/forwarding-plane.tpl
+apiVersion: apps/v1
+kind: DaemonSet
+spec:
+  selector:
+    matchLabels:
+      app: nsm-vpp-plane
+  template:
+    metadata:
+      labels:
+        app: nsm-vpp-plane
+    spec:
+      hostPID: true
+      hostNetwork: true
+      serviceAccount: forward-plane-acc
+      containers:
+        - name: vppagent-forwarder
+          securityContext:
+            privileged: true
+          image: networkservicemesh/vppagent-forwarder
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INSECURE
+              value: "false"
+            - name: METRICS_COLLECTOR_ENABLED
+              value: "false"
+            - name: TRACER_ENABLED
+              value: "false"
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+            - name: NSM_FORWARDER_SRC_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          volumeMounts:
+            - name: workspace
+              mountPath: /var/lib/networkservicemesh/
+              mountPropagation: Bidirectional
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+      volumes:
+        - hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+          name: workspace
+        - hostPath:
+            path: /run/spire/sockets
+            type: DirectoryOrCreate
+          name: spire-agent-socket
+metadata:
+  name: nsm-vpp-forwarder
+  namespace: default
+---
+# Source: nsm/templates/nsmgr.tpl
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nsmgr
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: nsmgr-daemonset
+  template:
+    metadata:
+      labels:
+        app: nsmgr-daemonset
+    spec:
+      serviceAccount: nsmgr-acc
+      containers:
+        - name: nsmdp
+          image: networkservicemesh/nsmdp
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INSECURE
+              value: "false"
+            - name: TRACER_ENABLED
+              value: "false"
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+          ports:
+            - containerPort: 5001
+              hostPort: 5001
+          volumeMounts:
+            - name: kubelet-socket
+              mountPath: /var/lib/kubelet/device-plugins
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+        - name: nsmd
+          image: networkservicemesh/nsmd
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INSECURE
+              value: "false"
+            - name: TRACER_ENABLED
+              value: "false"
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+          volumeMounts:
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: nsm-config-volume
+              mountPath: /var/lib/networkservicemesh/config
+          livenessProbe:
+            httpGet:
+              host: "127.0.0.1"
+              path: /liveness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              host: "127.0.0.1"
+              path: /readiness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+        - name: nsmd-k8s
+          image: networkservicemesh/nsmd-k8s
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+          env:
+            - name: INSECURE
+              value: "false"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: TRACER_ENABLED
+              value: "false"
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet/device-plugins
+            type: DirectoryOrCreate
+          name: kubelet-socket
+        - hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+          name: nsm-socket
+        - name: nsm-config-volume
+          configMap:
+            name: nsm-config
+        - hostPath:
+            path: /run/spire/sockets
+            type: DirectoryOrCreate
+          name: spire-agent-socket
+---
+# Source: nsm/charts/admission-webhook/templates/admission-webhook-secret.tpl
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsm-admission-webhook
+  namespace: default
+  labels:
+    app: nsm-admission-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nsm-admission-webhook
+  template:
+    metadata:
+      labels:
+        app: nsm-admission-webhook
+    spec:
+      containers:
+        - name: nsm-admission-webhook
+          image: networkservicemesh/admission-webhook
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REPO
+              value: "networkservicemesh"
+            - name: TAG
+              value: "master"
+            - name: NSM_NAMESPACE
+              value: "nsm-system"
+            - name: TRACER_ENABLED
+              value: "false"
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: nsm-admission-webhook-certs
+---
+# Source: nsm/charts/prefix-service/templates/deployment.tpl
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefix-service
+spec:
+  selector:
+    matchLabels:
+      app:  prefix-service
+  template:
+    metadata:
+      labels:
+        app: prefix-service
+    spec:
+      serviceAccountName: nsmgr-acc
+      containers:
+        - name: prefix-service
+          image: networkservicemesh/prefix-service
+          imagePullPolicy: IfNotPresent
+---
+# Source: nsm/charts/spire/templates/server-statefulset.tpl
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: spire-server
+  namespace: spire
+  labels:
+    app: spire-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spire-server
+  serviceName: spire-server
+  template:
+    metadata:
+      namespace: spire
+      labels:
+        app: spire-server
+    spec:
+      serviceAccountName: spire-server
+      shareProcessNamespace: true
+      containers:
+        - name: nsm-spire
+          securityContext:
+            privileged: true
+          image: networkservicemesh/nsm-spire
+          volumeMounts:
+            - name: spire-server-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: spire-entries
+              mountPath: /run/spire/entries
+              readOnly: true
+
+        - name: spire-server
+          image: gcr.io/spiffe-io/spire-server:0.9.0
+          args:
+            - -config
+            - /run/spire/config/server.conf
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: spire-server-socket
+              mountPath: /run/spire/sockets
+              readOnly: false
+            - name: spire-config
+              mountPath: /run/spire/config
+              readOnly: true
+            - name: spire-data
+              mountPath: /run/spire/data
+              readOnly: false
+            - name: spire-secret
+              mountPath: /run/spire/secret
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            failureThreshold: 2
+            initialDelaySeconds: 15
+            periodSeconds: 60
+            timeoutSeconds: 3
+      volumes:
+        - name: spire-server-socket
+          hostPath:
+            path: /run/spire/server-sockets
+            type: DirectoryOrCreate
+        - name: spire-config
+          configMap:
+            name: spire-server
+        - name: spire-secret
+          secret:
+            secretName: spire-secret
+        - name: spire-entries
+          configMap:
+            name: spire-entries
+        - name: spire-data
+          hostPath:
+            path: /var/spire-data
+            type: DirectoryOrCreate
+---
+# Source: nsm/charts/admission-webhook/templates/admission-webhook-secret.tpl
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: nsm-admission-webhook-cfg
+  namespace: default
+  labels:
+    app: nsm-admission-webhook
+webhooks:
+  - name: admission-webhook.networkservicemesh.io
+    clientConfig:
+      service:
+        name: nsm-admission-webhook-svc
+        namespace: default
+        path: "/mutate"
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURFRENDQWZpZ0F3SUJBZ0lRWm52bXZJWlRQY0FPOWh1ZUJPYlJ4akFOQmdrcWhraUc5dzBCQVFzRkFEQWkKTVNBd0hnWURWUVFERXhkaFpHMXBjM05wYjI0dFkyOXVkSEp2Ykd4bGNpMWpZVEFlRncweU1EQXlNRGd3TkRVeQpNakphRncwek1EQXlNRFV3TkRVeU1qSmFNQ0l4SURBZUJnTlZCQU1URjJGa2JXbHpjMmx2YmkxamIyNTBjbTlzCmJHVnlMV05oTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF5Ym82d0Q2YzJRQWoKWlEwK09RY3Jud1Ywc0xDeVB0NWgwZ3hLdjJHQXFENzNTaXUrRHdURHV0SXVlZUppSkozbVp4WUVDRktraUUvTgpnejl4MVI0aHlBYkRGejlIVnhRR21LcVROb1FaOWw5dXl1Umo4bHVCdGcvaG9KaTJ6ZnRnQVE4bGNyZG9xOUR0CndWRmk0WDhCWVJ4L2JqNXNqdWplMFl4OVEyTSsvbUx1QldFNVJEdmJvYUFSTWV6L3dpMG14WVBqeEVCWXkybU0KckxEY0crYzR1cEtGb0Z4aER6YW83U2VhVXRtNTVVb1J2K25UL2FlRTNMbTkvYW91WTBKTVlaSTY0RTJlYjY0NQpiNmlDcm1LdUJEeFpuTld2cGFCK1RqcDhLOThzQm1pNEFGUWVVU0tRK2gzWHFvSll6ejNNdHF3d2NpWWk5Y3pYCkNuZzU1N2dmRXdJREFRQUJvMEl3UURBT0JnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUIKQlFVSEF3RUdDQ3NHQVFVRkJ3TUNNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRApnZ0VCQUVxUTdncTFIaXIzQU9nMEF2MWxHYjd1SGZMcmNGYUxCOUROMHBQMDRwU3NJOXdiV05SaVJFeW9kNFIwCm5XakwzL3NLd2NzM3BlMDJUbkM2aWxKdTR1WWhnbFlZbklQcmhrdXU2U29MK0JsUWdUeEIwbkNxb1c0QmFMY1gKTVY5dURwZ1VPM0xKS2VZdFE1Vkp0SGk0L09oWTBaY2lRaENZZTlKUm4xYmtBUXlyZE8wclFxL1RLWXZpYmFoUwpUQ1krUnNwOE1XWjltRDNvOEZMVlQ5VzZuRlN5QkdSdnVDbkdDWEkwR2JIZzRSbkRTL3IrMC9PQUNnMEtZR0ZyCkNNZmd2NzZycmM2NDRERFVja2F5M1JyZllBcDJoKzZtbUh2Qms2Nll0MmUzelRwbTIzZ1FLVG1sK3ppRHVTdVgKMXFxZldJQzhTc3NZc1UzYXE2NTEvcGZPUHBnPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: ["apps", "extensions", ""]
+        apiVersions: ["v1", "v1beta1"]
+        resources: ["deployments", "services", "pods"]
+
