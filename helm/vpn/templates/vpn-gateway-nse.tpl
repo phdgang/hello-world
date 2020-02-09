@@ -35,7 +35,7 @@ spec:
             - name: ENDPOINT_LABELS
               value: "app=vpn-gateway"
             - name: IP_ADDRESS
-              value: "172.16.1.0/24"
+              value: "100.64.1.0/24"
             - name: TRACER_ENABLED
               value: {{ .Values.global.JaegerTracing | default false | quote }}
             - name: JAEGER_AGENT_HOST
