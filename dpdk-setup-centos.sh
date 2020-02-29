@@ -23,7 +23,7 @@ if [ $1='install' -o -z $1 ]; then
 elif [ $1='load' ]; then
 
 	modprobe uio
-	ismod dpdk-stable-17.11.2/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
+	insmod dpdk-stable-17.11.2/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
         
         ifconfig $2 down
  	dpdk-stable-17.11.2/usertools/dpdk-devbind.py -b igb_uio $2
