@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-if [ $1=install -o -z $1 ]; then
+if [ $1='install' -o -z $1 ]; then
 	wget https://dpdk.org/rel/dpdk-17.11.2.tar.xz
 	xz -d dpdk-17.11.2.tar.xz
 	tar -xvf dpdk-17.11.2.tar
@@ -20,7 +20,7 @@ if [ $1=install -o -z $1 ]; then
 	cd dpdk-stable-17.11.2/usertools
 	./dpdk-setup.sh
 
-elif [ $1=load ]
+elif [ $1='load' ]; then
 
 	modprobe uio
 	ismod dpdk-stable-17.11.2/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
@@ -29,7 +29,7 @@ elif [ $1=load ]
  	dpdk-stable-17.11.2/usertools/dpdk-devbind.py -b igb_uio $2
 	dpdk-stable-17.11.2/usertools/dpdk-devbind.py --status
 
-elif [ $1=release ]
+elif [ $1='release' ]; then
 
   	dpdk-stable-17.11.2/usertools/dpdk-devbind.py -b e1000 $2
 	ifconfig $2 up
@@ -39,6 +39,4 @@ else
 	echo "wrong flag"
 
 fi
-
-
 
