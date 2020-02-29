@@ -34,6 +34,10 @@ elif [ $1='release' ]; then
   	dpdk-stable-17.11.2/usertools/dpdk-devbind.py -b e1000 $2
 	ifconfig $2 up
 
+elif [ $1='quick' ]; then
+        git clone https://github.com/phdgang/storage.git
+        yum install -y pciutils
+
 else
 
 	echo "wrong flag"
