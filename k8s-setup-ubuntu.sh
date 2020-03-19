@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 apt-get update && apt-get install -y apt-transport-https
 echo "deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update --allow-insecure-repositories
@@ -17,3 +18,7 @@ swapoff -a
 ipAddr=`ifconfig eth1 | awk 'NR==2 {print $2}'`
 
 kubeadm init --apiserver-advertise-address ${ipAddr} --pod-network-cidr=192.168.0.0/16
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
