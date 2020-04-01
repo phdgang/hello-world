@@ -1,13 +1,10 @@
 #!/bin/sh
 
 
-if [ $1 == "install" ]; then
+if [ $1 == "setup" ]; then
 	wget https://dpdk.org/rel/dpdk-17.11.2.tar.xz
 	xz -d dpdk-17.11.2.tar.xz
 	tar -xvf dpdk-17.11.2.tar
-
-	apt-get install linux-image-`uname -r`
-	apt-get install linux-headers-`uname -r`
 
 	export RTE_SDK=dpdk-stable-17.11.2
 	export RTE_TARGET=x86_64-native-linuxapp-gcc
